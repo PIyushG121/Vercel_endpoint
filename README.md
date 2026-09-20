@@ -1,70 +1,67 @@
-# Minimal Vercel Serverless Backend for Hostinger MySQL (DSA Mobile API)
+# DSA Mobile Backend API (Vercel Serverless + Hostinger MySQL)
 
-An ultra-lightweight, production-ready REST API designed to run on **Vercel Serverless Functions** and securely connect to an existing **Hostinger MySQL database**, tailored for mobile apps (Flutter, React Native, Kotlin, Swift).
+[![Production API](https://img.shields.io/badge/Vercel-Live%20API-brightgreen?style=for-the-badge&logo=vercel)](https://vercel-endpoint-wine.vercel.app/)
+[![Database](https://img.shields.io/badge/Hostinger-MySQL%208.0-orange?style=for-the-badge&logo=mysql)](https://hostinger.com)
+[![Status](https://img.shields.io/badge/Status-Operational-success?style=for-the-badge)]()
+
+Production-ready, lightweight REST API built with Node.js Serverless Functions on **Vercel** and connected via connection pooling to **Hostinger MySQL**. Tailored specifically for mobile clients (**Flutter**, **React Native**, **Android Kotlin**, **iOS Swift**) for fast feed scrolling, instant caching, and low bandwidth consumption.
+
+---
+
+## 🌐 Live Production Base URL
+
+```text
+https://vercel-endpoint-wine.vercel.app
+```
 
 ---
 
 ## 🏗 Architecture
 
 ```text
-[ Mobile APK ] (Flutter / React Native / Native)
-      │ (HTTPS REST Calls)
-      ▼
-[ Vercel Serverless API ] (Node.js + mysql2 Connection Pool)
-      │ (Remote MySQL Port 3306)
-      ▼
-[ Hostinger MySQL Database ] (dsa_categories, dsa_notes, dsa_questions, dsa_note_links)
+┌─────────────────────────────────────────────────────────┐
+│              Mobile APK / App Client                    │
+│      (Flutter / React Native / Kotlin / Swift)          │
+└────────────────────────────┬────────────────────────────┘
+                             │
+                             │ HTTPS REST Requests (JSON)
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│               Vercel Serverless Layer                   │
+│        https://vercel-endpoint-wine.vercel.app          │
+│       (mysql2 cached connection pool across warm hits)  │
+└────────────────────────────┬────────────────────────────┘
+                             │
+                             │ Remote MySQL (Port 3306)
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│               Hostinger MySQL Database                  │
+│   (dsa_categories, dsa_notes, dsa_questions, links)     │
+└─────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 📁 Project Structure
-
-```text
-vercel-api/
-├── api/
-│   └── index.js       # Main serverless request handler & MySQL pool
-├── .env.example       # Environment variables template
-├── .gitignore         # Ignores .env and node_modules
-├── package.json       # Project dependencies & scripts
-├── vercel.json        # Vercel serverless rewrite rules
-└── README.md          # Full setup and deployment documentation
-```
+> **Security Guarantee:** Mobile clients never connect directly to MySQL. All queries are parameterized, sanitized, and served through this secure API layer without exposing database credentials.
 
 ---
 
-## ⚙️ Quick Start
+## 📱 Mobile API Endpoints & Live Links
 
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Copy and set environment variables
-cp .env.example .env
-
-# 3. Start local development server
-npm run dev
-```
-
----
-
-## 📱 Mobile-Optimized API Endpoints
-
-| Screen in Mobile App | Method | Endpoint | Query Params |
-|---|---|---|---|
-| **Roadmap / Topics Screen** | `GET` | `/api/dsa/topics` | — |
-| **Topic Detail (Subsections & Links)** | `GET` | `/api/dsa/topics/{slug}` | — |
-| **Questions Feed / Practice Screen** | `GET` | `/api/dsa/questions` | `?topic=slug&difficulty=medium&search=two-sum&page=1&per_page=20` |
-| **Question Reader Screen** | `GET` | `/api/dsa/questions/{slug}` | — |
-| **Tutorial Notes Feed** | `GET` | `/api/dsa/notes` | `?topic=slug&search=loop&page=1&per_page=20` |
-| **Note Article Reader Screen** | `GET` | `/api/dsa/notes/{slug}` | — |
-| **Health Check** | `GET` | `/api/health` | — |
+| Mobile Screen | Method | Endpoint | Query Params | Live Link |
+|---|---|---|---|---|
+| **Roadmap / Topics** | `GET` | `/api/dsa/topics` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/topics) |
+| **Topic Detail** | `GET` | `/api/dsa/topics/{slug}` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/topics/fundamentals) |
+| **Questions Feed** | `GET` | `/api/dsa/questions` | `?topic=slug&search=query&page=1&per_page=20` | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/questions?per_page=5) |
+| **Question Reader** | `GET` | `/api/dsa/questions/{slug}` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/questions/dsa-tutorial-learn-data-structures-and-algorithms) |
+| **Tutorial Notes Feed** | `GET` | `/api/dsa/notes` | `?topic=slug&search=query&page=1&per_page=20` | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/notes?per_page=5) |
+| **Note Article Reader** | `GET` | `/api/dsa/notes/{slug}` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/api/dsa/notes/input-and-output-in-programming) |
+| **Database Health Check**| `GET` | `/api/health` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/api/health) |
+| **API Root Status** | `GET` | `/` | — | [Open Live](https://vercel-endpoint-wine.vercel.app/) |
 
 ---
 
-### JSON Response Examples
+## 📋 JSON Schema Examples
 
-#### 1. Roadmap & Hierarchy (`GET /api/dsa/topics`)
+### 1. Roadmap & Categories (`GET /api/dsa/topics`)
 ```json
 {
   "success": true,
@@ -73,8 +70,8 @@ npm run dev
       "id": 137,
       "title": "Fundamentals",
       "slug": "fundamentals",
-      "total_subtopics": 3,
-      "total_items": 15,
+      "total_subtopics": 2,
+      "total_items": 13,
       "subtopics": [
         {
           "id": 138,
@@ -97,70 +94,96 @@ npm run dev
 }
 ```
 
-#### 2. Paginated Questions Feed (`GET /api/dsa/questions?page=1&per_page=20`)
-*(Lightweight payload without full HTML content for fast scrolling)*
+---
+
+### 2. Paginated Questions Feed (`GET /api/dsa/questions?page=1&per_page=20`)
+*(Lightweight payload without full HTML content for fast mobile scrolling)*
+
 ```json
 {
   "success": true,
   "data": [
     {
       "id": 1,
-      "title": "Two Sum Problem",
-      "slug": "two-sum-problem",
-      "topic": "Array & String",
-      "topic_slug": "array-string",
+      "title": "DSA Tutorial",
+      "slug": "dsa-tutorial-learn-data-structures-and-algorithms",
+      "topic": "DSA Practice",
+      "topic_slug": "dsa-practice",
       "difficulty": "medium",
-      "excerpt": "Given an array of integers nums and an integer target...",
-      "last_updated": "26 Mar, 2026"
+      "excerpt": "Data Structures and Algorithms Tutorial - A complete guide for beginners...",
+      "last_updated": "Recently updated"
     }
   ],
   "pagination": {
     "current_page": 1,
-    "last_page": 15,
+    "last_page": 4,
     "per_page": 20,
-    "total": 300,
+    "total": 79,
     "has_more": true
   }
 }
 ```
 
-#### 3. Single Question Reader (`GET /api/dsa/questions/{slug}`)
-*(Delivers full HTML content for reading screen)*
+---
+
+### 3. Single Question Reader (`GET /api/dsa/questions/{slug}`)
+*(Delivers full HTML article content and source URL for reader screen)*
+
 ```json
 {
   "success": true,
   "data": {
     "id": 1,
-    "title": "Two Sum Problem",
-    "slug": "two-sum-problem",
-    "topic": "Array & String",
+    "title": "DSA Tutorial",
+    "slug": "dsa-tutorial-learn-data-structures-and-algorithms",
+    "topic": "DSA Practice",
     "difficulty": "medium",
-    "content_html": "<p>Given an array...</p>",
-    "source_url": "https://www.geeksforgeeks.org/...",
-    "last_updated": "26 Mar, 2026"
+    "content_html": "<p>Content HTML body...</p>",
+    "source_url": "https://www.geeksforgeeks.org/dsa-tutorial-learn-data-structures-and-algorithms/",
+    "last_updated": "Recently updated"
   }
 }
 ```
 
 ---
 
-## 🌐 Hostinger Remote MySQL Setup
+## 🛠 Local Development & Testing
 
-1. In **Hostinger hPanel** → **Databases** → **Remote MySQL**.
-2. Set **IP** to `%` (allow dynamic Vercel IP pool).
-3. Select database and click **Create**.
+```bash
+# 1. Clone the repository
+git clone https://github.com/PIyushG121/Vercel_endpoint.git
+cd Vercel_endpoint
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment variables
+copy .env.example .env
+# Edit .env with your Hostinger database credentials
+
+# 4. Start local development server
+npm run dev
+# Server runs on http://localhost:3000
+```
 
 ---
 
-## 🚀 Vercel Deployment
+## 🔒 Security & Best Practices
+
+1. **Zero Exposure:** Database credentials, host, and internal connection details are never exposed in responses or client code.
+2. **SQL Injection Prevention:** Every query uses parameterized inputs (`?` and `??` identifiers).
+3. **Optimized for Mobile Bandwidth:** Feed endpoints omit large HTML blobs and return excerpts, reducing payload sizes from **~2 MB to ~15 KB**.
+4. **Infinite Scroll Ready:** `pagination.has_more` simplifies mobile pagination state management.
+5. **CORS:** Preflight `OPTIONS` and standard CORS headers configured for cross-platform support.
+
+---
+
+## 🚀 Deployment
+
+The project is continuously deployed to Vercel upon pushing to the `main` branch:
 
 ```bash
-git init
 git add .
-git commit -m "Deploy Vercel DSA Mobile API"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-git push -u origin main
+git commit -m "Update API"
+git push origin main
 ```
-
-Add your environment variables (`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `CORS_ORIGIN`) in the Vercel dashboard and click **Deploy**.
