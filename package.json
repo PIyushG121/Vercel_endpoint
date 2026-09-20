@@ -1,0 +1,17 @@
+{
+  "name": "vercel-mysql-backend",
+  "version": "1.0.0",
+  "description": "Minimal production-ready Vercel serverless backend connecting to Hostinger MySQL",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mysql2": "^3.12.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
